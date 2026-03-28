@@ -275,7 +275,7 @@ async function handleChatCompletion(
 
 async function handleModelsRequest(): Promise<ApiResponse> {
   const models = modelStore.models.filter(
-    m => m.origin === ModelOrigin.LOCAL && m.isDownloaded,
+    m => m.origin !== ModelOrigin.REMOTE && m.isDownloaded,
   );
 
   const data = models.map(m => ({

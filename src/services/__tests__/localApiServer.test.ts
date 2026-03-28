@@ -13,6 +13,7 @@ const mockModelStore = {
   },
   models: [
     {id: 'local-1', origin: ModelOrigin.LOCAL, isDownloaded: true},
+    {id: 'preset-1', origin: ModelOrigin.PRESET, isDownloaded: true},
     {id: 'remote-1', origin: ModelOrigin.REMOTE, isDownloaded: true},
   ],
   engine: mockEngine as any,
@@ -68,6 +69,7 @@ describe('localApiServer.handleApiRequest', () => {
     const payload = JSON.parse(response.body);
     expect(payload.data).toEqual([
       {id: 'local-1', object: 'model', owned_by: 'pocketpal'},
+      {id: 'preset-1', object: 'model', owned_by: 'pocketpal'},
     ]);
   });
 
