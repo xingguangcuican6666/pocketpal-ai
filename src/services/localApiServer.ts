@@ -325,7 +325,12 @@ export async function handleApiRequest(
 }
 
 function respond(requestId: string, response: ApiResponse) {
-  httpBridge.respond(requestId, response.status, response.contentType, response.body);
+  httpBridge.respond(
+    requestId,
+    response.status,
+    response.contentType,
+    response.body,
+  );
 }
 
 export function startLocalApiServer(
