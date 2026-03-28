@@ -51,7 +51,7 @@ describe('localApiServer.handleApiRequest', () => {
 
   it('rejects when API key is missing', async () => {
     const response = await handleApiRequest(
-      {url: '/v1/models', type: 'GET', headers: {}},
+      {url: '/v1/models', type: 'GET', headers: {}, requestId: 'req-1'},
       {port: 8000, apiKey: 'secret'},
     );
 
@@ -60,7 +60,7 @@ describe('localApiServer.handleApiRequest', () => {
 
   it('returns available local models', async () => {
     const response = await handleApiRequest(
-      {url: '/v1/models', type: 'GET'},
+      {url: '/v1/models', type: 'GET', requestId: 'req-2'},
       {port: 8000},
     );
 
@@ -88,6 +88,7 @@ describe('localApiServer.handleApiRequest', () => {
         postData: JSON.stringify({
           messages: [{role: 'user', content: 'Hi'}],
         }),
+        requestId: 'req-3',
       },
       {port: 8000},
     );
@@ -122,6 +123,7 @@ describe('localApiServer.handleApiRequest', () => {
           messages: [{role: 'user', content: 'Hi'}],
           stream: true,
         }),
+        requestId: 'req-4',
       },
       {port: 8000},
     );
@@ -141,6 +143,7 @@ describe('localApiServer.handleApiRequest', () => {
         postData: JSON.stringify({
           messages: [{role: 'user', content: 'Hi'}],
         }),
+        requestId: 'req-5',
       },
       {port: 8000},
     );
