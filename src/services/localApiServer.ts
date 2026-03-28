@@ -139,7 +139,7 @@ async function handleChatCompletion(
 
   const nPredict = toNumber(
     body.max_tokens || body.max_completion_tokens,
-    defaultCompletionParams.n_predict,
+    defaultCompletionParams.n_predict ?? 0,
   );
 
   const completionParams = toApiCompletionParams({
