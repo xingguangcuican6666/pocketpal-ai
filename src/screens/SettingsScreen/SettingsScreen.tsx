@@ -45,7 +45,7 @@ import {useTheme} from '../../hooks';
 
 import {createStyles} from './styles';
 
-import {modelStore, uiStore, hfStore} from '../../store';
+import {modelStore, uiStore, hfStore, localServerStore} from '../../store';
 import {languageDisplayNames} from '../../locales';
 
 import {CacheType} from '../../utils/types';
@@ -83,6 +83,10 @@ export const SettingsScreen: React.FC = observer(() => {
   const [showValueCacheMenu, setShowValueCacheMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showHfTokenDialog, setShowHfTokenDialog] = useState(false);
+  const [portInputValue, setPortInputValue] = useState(
+    String(localServerStore.port),
+  );
+  const [portInputError, setPortInputError] = useState<string | null>(null);
   const [gpuSupported, setGpuSupported] = useState(false);
   const [keyCacheAnchor, setKeyCacheAnchor] = useState<{x: number; y: number}>({
     x: 0,
@@ -1119,6 +1123,143 @@ export const SettingsScreen: React.FC = observer(() => {
               </Card.Content>
             </Card>
           )}
+
+          {/* Local API Server */}
+          <Card elevation={0} style={styles.card}>
+            <Card.Title title={l10n.settings.localApiServer} />
+            <Card.Content>
+              <View style={styles.settingItemContainer}>
+                {/* Description */}
+                <Text variant="labelSmall" style={styles.textDescription}>
+                  {l10n.settings.localApiServerDescription}
+                </Text>
+
+                <Divider style={styles.divider} />
+
+                {/* Enable toggle */}
+                <View style={styles.switchContainer}>
+                  <View style={styles.textContainer}>
+                    <Text variant="titleMedium" style={styles.textLabel}>
+                      {l10n.settings.localApiServerEnabled}
+                    </Text>
+                    <Text variant="labelSmall" style={styles.textDescription}>
+                      {localServerStore.isRunning
+                        ? l10n.settings.localApiServerRunning.replace(
+                            '{{url}}',
+                            localServerStore.serverUrl,
+                          )
+                        : localServerStore.serverError
+                          ? l10n.settings.localApiServerError.replace(
+                              '{{error}}',
+                              localServerStore.serverError,
+                            )
+                          : l10n.settings.localApiServerStopped}
+                    </Text>
+                  </View>
+                  <Switch
+                    testID="local-api-server-switch"
+                    value={localServerStore.isEnabled}
+                    onValueChange={value => localServerStore.setEnabled(value)}
+                  />
+                </View>
+
+                {/* Port */}
+                {localServerStore.isEnabled && (
+                  <>
+                    <Divider style={styles.divider} />
+                    <View style={styles.switchContainer}>
+                      <View style={styles.textContainer}>
+                        <Text variant="titleMedium" style={styles.textLabel}>
+                          {l10n.settings.localApiServerPort}
+                        </Text>
+                        <Text
+                          variant="labelSmall"
+                          style={styles.textDescription}>
+                          {l10n.settings.localApiServerPortDescription}
+                        </Text>
+                      </View>
+                      <TextInput
+                        style={[
+                          styles.portInput,
+                          portInputError ? styles.invalidInput : undefined,
+                        ]}
+                        keyboardType="number-pad"
+                        value={portInputValue}
+                        onChangeText={text => {
+                          setPortInputValue(text);
+                          const parsed = parseInt(text, 10);
+                          if (
+                            !isNaN(parsed) &&
+                            parsed >= 1024 &&
+                            parsed <= 65535
+                          ) {
+                            setPortInputError(null);
+                          } else {
+                            setPortInputError(
+                              l10n.settings.localApiServerPortInvalid,
+                            );
+                          }
+                        }}
+                        onBlur={() => {
+                          const parsed = parseInt(portInputValue, 10);
+                          if (
+                            !isNaN(parsed) &&
+                            parsed >= 1024 &&
+                            parsed <= 65535
+                          ) {
+                            setPortInputError(null);
+                            localServerStore.setPort(parsed);
+                          } else {
+                            setPortInputError(
+                              l10n.settings.localApiServerPortInvalid,
+                            );
+                          }
+                        }}
+                        placeholder={
+                          l10n.settings.localApiServerPortPlaceholder
+                        }
+                      />
+                    </View>
+                    {portInputError && (
+                      <Text variant="labelSmall" style={styles.errorText}>
+                        {portInputError}
+                      </Text>
+                    )}
+                  </>
+                )}
+
+                {/* No-model warning */}
+                {localServerStore.isEnabled && !modelStore.activeModel && (
+                  <>
+                    <Divider style={styles.divider} />
+                    <Text
+                      variant="labelSmall"
+                      style={[
+                        styles.textDescription,
+                        {color: theme.colors.error},
+                      ]}>
+                      {l10n.settings.localApiServerNoModelWarning}
+                    </Text>
+                  </>
+                )}
+
+                {/* Endpoints hint */}
+                {localServerStore.isEnabled && (
+                  <>
+                    <Divider style={styles.divider} />
+                    <Text variant="labelSmall" style={styles.textDescription}>
+                      {l10n.settings.localApiServerEndpoints}
+                    </Text>
+                    <Text
+                      variant="labelSmall"
+                      style={[styles.textDescription, styles.monoText]}>
+                      {l10n.settings.localApiServerEndpointsHint}
+                    </Text>
+                  </>
+                )}
+              </View>
+            </Card.Content>
+          </Card>
 
           {/* Export Options */}
           <Card elevation={0} style={styles.card}>

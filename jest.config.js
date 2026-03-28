@@ -76,6 +76,8 @@ module.exports = {
       '<rootDir>/__mocks__/external/@react-native-google-signin/google-signin.ts',
     'react-native-code-highlighter':
       '<rootDir>/__mocks__/external/react-native-code-highlighter.js',
+    'react-native-tcp-socket':
+      '<rootDir>/__mocks__/external/react-native-tcp-socket.ts',
     '@env': '<rootDir>/__mocks__/external/@env.js',
     '@gorhom/bottom-sheet':
       '<rootDir>/__mocks__/external/@gorhom/bottom-sheet.js',
