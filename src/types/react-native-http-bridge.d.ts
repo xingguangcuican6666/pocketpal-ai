@@ -4,14 +4,20 @@ declare module 'react-native-http-bridge' {
     type: string;
     postData?: string;
     headers?: Record<string, string>;
+    requestId: string;
   };
 
   type RequestHandler = (request: HttpRequest) => void | Promise<void>;
 
   const httpBridge: {
-    start(port: number, handler: RequestHandler): void;
+    start(port: number, serviceName: string, handler: RequestHandler): void;
     stop(): void;
-    respond(status: number, contentType: string, body: string): void;
+    respond(
+      requestId: string,
+      status: number,
+      contentType: string,
+      body: string,
+    ): void;
   };
 
   export default httpBridge;

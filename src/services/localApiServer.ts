@@ -15,6 +15,7 @@ type HttpRequest = {
   type: string;
   postData?: string;
   headers?: Record<string, string>;
+  requestId: string;
 };
 
 type ApiResponse = {
@@ -323,8 +324,8 @@ export async function handleApiRequest(
   return buildError(404, 'Not found', 'invalid_request_error');
 }
 
-function respond(response: ApiResponse) {
-  httpBridge.respond(response.status, response.contentType, response.body);
+function respond(requestId: string, response: ApiResponse) {
+  httpBridge.respond(requestId, response.status, response.contentType, response.body);
 }
 
 export function startLocalApiServer(
@@ -337,12 +338,15 @@ export function startLocalApiServer(
 
   activeConfig = config;
   try {
-    httpBridge.start(config.port, async request => {
+    httpBridge.start(config.port, 'http-server', async request => {
       try {
         const response = await handleApiRequest(request, config);
-        respond(response);
+        respond(request.requestId, response);
       } catch (error: any) {
-        respond(buildError(500, error?.message || 'Internal server error'));
+        respond(
+          request.requestId,
+          buildError(500, error?.message || 'Internal server error'),
+        );
       }
     });
     isRunning = true;
