@@ -1,7 +1,7 @@
 let handler = null;
 
 const httpBridge = {
-  start: (_port, cb) => {
+  start: (_port, _serviceName, cb) => {
     handler = cb;
   },
   stop: () => {
