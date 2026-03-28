@@ -9,4 +9,3 @@ export const mockLocalApiStore = {
   setApiKey: jest.fn(),
   setError: jest.fn(),
 };
-
