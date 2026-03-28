@@ -251,7 +251,10 @@ export class LocalApiServer {
   // Request routing
   // ------------------------------------------------------------------
 
-  protected async handleRequest(socket: any, req: ParsedRequest): Promise<void> {
+  protected async handleRequest(
+    socket: any,
+    req: ParsedRequest,
+  ): Promise<void> {
     // CORS pre-flight
     if (req.method === 'OPTIONS') {
       const res = httpResponse(204, 'No Content', '');
