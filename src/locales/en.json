@@ -154,7 +154,20 @@
     "removeRemoteModel": "Remove {{modelName}} ({{serverName}})?",
     "retryConnection": "Retry",
     "enterUrlManually": "Enter URL manually",
-    "manageServers": "Manage Servers"
+    "manageServers": "Manage Servers",
+    "localApiServer": "Local API Server",
+    "localApiServerDescription": "Expose an OpenAI-compatible HTTP API on this device so other apps can use the loaded model.",
+    "localApiServerEnabled": "Enable Local API Server",
+    "localApiServerPort": "Port",
+    "localApiServerPortPlaceholder": "e.g. 8080",
+    "localApiServerPortDescription": "The port the server listens on (1024–65535).",
+    "localApiServerPortInvalid": "Port must be a number between 1024 and 65535.",
+    "localApiServerRunning": "Running — connect to {{url}}",
+    "localApiServerStopped": "Stopped",
+    "localApiServerError": "Error: {{error}}",
+    "localApiServerNoModelWarning": "Load a model to start accepting requests.",
+    "localApiServerEndpoints": "Available endpoints",
+    "localApiServerEndpointsHint": "GET /v1/models  •  POST /v1/chat/completions"
   },
   "memory": {
     "shortWarning": "Memory Warning",

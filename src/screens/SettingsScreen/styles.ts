@@ -72,6 +72,12 @@ export const createStyles = (theme: Theme) =>
     menuButton: {
       minWidth: 100,
     },
+    portInput: {
+      width: 80,
+    },
+    monoText: {
+      fontFamily: 'monospace',
+    },
     buttonContent: {
       flexDirection: 'row-reverse',
       justifyContent: 'space-between',
