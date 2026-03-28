@@ -53,7 +53,7 @@ function parseRequestBody<T = any>(raw?: string): T | null {
   }
   try {
     return JSON.parse(raw) as T;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -62,7 +62,7 @@ function normalizeAuth(headers: Record<string, string> | undefined) {
   if (!headers) {
     return undefined;
   }
-  return headers['Authorization'] || headers['authorization'];
+  return headers.Authorization || headers.authorization;
 }
 
 function mapFinishReason(result: any): string | null {
@@ -165,44 +165,6 @@ async function handleChatCompletion(
   let accumulated = '';
   let accumulatedReasoning = '';
   const streamChunks: string[] = [];
-
-  const completionPromise = modelStore.engine.completion(
-    completionParams,
-    body.stream
-      ? data => {
-          if (data?.content) {
-            accumulated += data.content;
-          }
-          if (data?.reasoning_content) {
-            accumulatedReasoning += data.reasoning_content;
-          }
-
-          const chunkPayload = {
-            id: `chatcmpl-${created}`,
-            object: 'chat.completion.chunk',
-            created,
-            model: activeModel.id,
-            choices: [
-              {
-                index: 0,
-                delta: {
-                  content: data?.content,
-                  reasoning_content: data?.reasoning_content,
-                },
-                finish_reason: null,
-              },
-            ],
-          };
-
-            streamChunks.push(`data: ${JSON.stringify(chunkPayload)}\n\n`);
-            modelStore.setIsStreaming(true);
-          }
-        : undefined,
-    );
-
-  if (modelStore.context) {
-    modelStore.registerCompletionPromise(completionPromise);
-  }
 
   modelStore.setInferencing(true);
   try {
@@ -345,7 +307,7 @@ export async function handleApiRequest(
   let path = request.url || '/';
   try {
     path = new URL(path, 'http://localhost').pathname;
-  } catch (error) {
+  } catch {
     // ignore, use raw path
   }
 

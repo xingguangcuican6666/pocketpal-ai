@@ -75,9 +75,8 @@ class LocalApiStore {
 
   async startServer() {
     try {
-      startLocalApiServer(
-        {port: this.port, apiKey: this.apiKey},
-        error => this.setError(error?.message),
+      startLocalApiServer({port: this.port, apiKey: this.apiKey}, error =>
+        this.setError(error?.message),
       );
       runInAction(() => {
         this.setRunning(true);

@@ -1043,10 +1043,10 @@ export const SettingsScreen: React.FC = observer(() => {
                             message: localApiStore.lastError,
                           })
                         : localApiStore.running
-                        ? t(l10n.settings.localApiStatusRunning, {
-                            port: localApiStore.port.toString(),
-                          })
-                        : l10n.settings.localApiStatusStopped}
+                          ? t(l10n.settings.localApiStatusRunning, {
+                              port: localApiStore.port.toString(),
+                            })
+                          : l10n.settings.localApiStatusStopped}
                     </Text>
                     {!modelStore.context && (
                       <Text variant="labelSmall" style={styles.textDescription}>
