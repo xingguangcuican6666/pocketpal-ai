@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-http-bridge/android/build.gradle b/node_modules/react-native-http-bridge/android/build.gradle
-index 9417a5f..297f19d 100644
+index 9417a5f..3e737b6 100644
 --- a/node_modules/react-native-http-bridge/android/build.gradle
 +++ b/node_modules/react-native-http-bridge/android/build.gradle
-@@ -1,6 +1,7 @@
+@@ -1,40 +1,44 @@
  buildscript {
      repositories {
 -        jcenter()
@@ -10,8 +10,10 @@ index 9417a5f..297f19d 100644
 +        mavenCentral()
      }
      dependencies {
-         classpath 'com.android.tools.build:gradle:2.2.0'
-@@ -9,7 +10,8 @@ buildscript {
+-        classpath 'com.android.tools.build:gradle:2.2.0'
++        classpath 'com.android.tools.build:gradle:8.10.1'
+     }
+ }
  
  allprojects {
      repositories {
@@ -21,3 +23,39 @@ index 9417a5f..297f19d 100644
      }
  }
  
+ apply plugin: 'com.android.library'
+ 
+ android {
+-    compileSdkVersion 26
+-    buildToolsVersion "26.0.2"
++    compileSdkVersion rootProject.ext.compileSdkVersion
+ 
+     defaultConfig {
+-        minSdkVersion 16
+-        targetSdkVersion 22
++        minSdkVersion rootProject.ext.minSdkVersion
++        targetSdkVersion rootProject.ext.targetSdkVersion
+         versionCode 2
+         versionName "1.1"
+         ndk {
+-            abiFilters "armeabi-v7a", "x86"
++            abiFilters "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+         }
+     }
++
+     lintOptions {
+-       warning 'InvalidPackage'
++        warning 'InvalidPackage'
+     }
++
++    namespace "me.alwx.HttpServer"
+ }
+ 
+ dependencies {
+-    compile 'com.facebook.react:react-native:+'
+-    compile 'com.google.android.gms:play-services-gcm:+'
+-    compile 'org.nanohttpd:nanohttpd:2.3.1'
++    implementation 'com.facebook.react:react-native:+'
++    implementation 'com.google.android.gms:play-services-gcm:+'
++    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+ }
