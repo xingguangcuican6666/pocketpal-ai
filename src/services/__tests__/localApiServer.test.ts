@@ -152,4 +152,60 @@ describe('localApiServer.handleApiRequest', () => {
 
     expect(response.status).toBe(409);
   });
+
+  it('rejects when messages is not an array', async () => {
+    const response = await handleApiRequest(
+      {
+        url: '/v1/chat/completions',
+        type: 'POST',
+        postData: JSON.stringify({
+          messages: {role: 'user', content: 'Hi'},
+        }),
+        requestId: 'req-6',
+      },
+      {port: 8000},
+    );
+
+    expect(response.status).toBe(400);
+    const payload = JSON.parse(response.body);
+    expect(payload.error.message).toBe('messages array is required');
+  });
+
+  it('rejects when model differs from active local model', async () => {
+    const response = await handleApiRequest(
+      {
+        url: '/v1/chat/completions',
+        type: 'POST',
+        postData: JSON.stringify({
+          model: 'other',
+          messages: [{role: 'user', content: 'Hi'}],
+        }),
+        requestId: 'req-7',
+      },
+      {port: 8000},
+    );
+
+    expect(response.status).toBe(400);
+    const payload = JSON.parse(response.body);
+    expect(payload.error.message).toContain('Requested model "other"');
+  });
+
+  it('returns model not loaded error when engine/context missing', async () => {
+    mockModelStore.engine = undefined as any;
+    const response = await handleApiRequest(
+      {
+        url: '/v1/chat/completions',
+        type: 'POST',
+        postData: JSON.stringify({
+          messages: [{role: 'user', content: 'Hi'}],
+        }),
+        requestId: 'req-8',
+      },
+      {port: 8000},
+    );
+
+    expect(response.status).toBe(503);
+    const payload = JSON.parse(response.body);
+    expect(payload.error.message).toContain('Model is not loaded');
+  });
 });

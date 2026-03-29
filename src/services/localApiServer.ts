@@ -318,6 +318,41 @@ export async function handleApiRequest(
 
   if (request.type === 'POST' && path === '/v1/chat/completions') {
     const body = parseRequestBody(request.postData);
+    if (!body) {
+      return buildError(400, 'Invalid JSON body');
+    }
+
+    const normalizedModelId =
+      typeof body.model === 'string' && body.model.trim()
+        ? body.model.trim()
+        : undefined;
+    const activeModel = modelStore.activeModel;
+
+    // If a model is specified and differs from the active one, return a clear error
+    if (
+      normalizedModelId &&
+      activeModel &&
+      normalizedModelId !== activeModel.id
+    ) {
+      return buildError(
+        400,
+        `Requested model "${normalizedModelId}" is not the active local model`,
+      );
+    }
+
+    // Provide a more actionable error when the model context/engine is missing
+    if (!modelStore.engine || !modelStore.context) {
+      return buildError(
+        503,
+        'Model is not loaded. Open the app and load a local model before using the API.',
+      );
+    }
+
+    // Ensure messages is an array to avoid downstream errors
+    if (!Array.isArray(body.messages)) {
+      return buildError(400, 'messages array is required');
+    }
+
     return handleChatCompletion(body, created);
   }
 
