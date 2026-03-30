@@ -55,9 +55,9 @@ function normalizeMessages(
     return messages;
   }
 
-  // Some clients may accidentally send an object with numeric keys (e.g., {"0": {...}, "1": {...}})
-  // instead of a JSON array. Coerce such shapes into an array to prevent downstream errors like
-  // "Object is an object, expected an array".
+  // Some clients may accidentally send an object with numeric keys (e.g., {"0": {...}, "1": {...}, foo: "bar"})
+  // instead of a JSON array. Coerce any numeric-keyed entries into an array to prevent downstream errors like
+  // "Object is an object, expected an array". Non-numeric keys are ignored.
   if (messages && typeof messages === 'object') {
     const numericKeys = Object.keys(messages)
       .filter(k => /^\d+$/.test(k))
