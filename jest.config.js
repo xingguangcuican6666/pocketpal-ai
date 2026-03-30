@@ -74,6 +74,8 @@ module.exports = {
       '<rootDir>/__mocks__/external/react-native-vision-camera.ts',
     '@react-native-google-signin/google-signin':
       '<rootDir>/__mocks__/external/@react-native-google-signin/google-signin.ts',
+    'react-native-http-bridge':
+      '<rootDir>/__mocks__/external/react-native-http-bridge.js',
     'react-native-code-highlighter':
       '<rootDir>/__mocks__/external/react-native-code-highlighter.js',
     '@env': '<rootDir>/__mocks__/external/@env.js',

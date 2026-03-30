@@ -100,6 +100,40 @@ Get PocketPal AI on Google Play:
 
 <img src="assets/images and logos/Chat.png" alt="Chat Screenshot" width="83%">
 
+### Calling the local OpenAI-compatible API (/v1/chat/completions)
+
+PocketPal ships with a local API server (default port `8000`, enable it in **Settings → Local API**, API Key optional). **Load a local model in the app first**, and make sure the `model` field matches the active model ID (discoverable via `GET /v1/models`).  
+PocketPal 内置本地 API 服务器（默认端口 `8000`，可在 **Settings → Local API** 开启并设置 API Key）。调用前请在 App 内加载本地模型；`model` 字段需与当前激活模型 ID 一致，可通过 `GET /v1/models` 获取。
+
+```bash
+# One-line JSON to avoid shell quoting issues (replace placeholders with your values)
+curl -X POST http://127.0.0.1:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY_IF_SET" \
+  -d '{"model":"REPLACE_WITH_ACTIVE_MODEL_ID_FROM_/v1/models","messages":[{"role":"system","content":"You are PocketPal."},{"role":"user","content":"wakeup"}],"stream":false}'
+
+# 或先保存为文件再调用，避免多行引号被终端错误解析
+cat > /tmp/pocketpal-chat.json <<'EOF'
+{
+  "model": "REPLACE_WITH_ACTIVE_MODEL_ID_FROM_/v1/models",
+  "messages": [
+    {"role": "system", "content": "You are PocketPal."},
+    {"role": "user", "content": "wakeup"}
+  ],
+  "stream": false
+}
+EOF
+curl -X POST http://127.0.0.1:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY_IF_SET" \
+  --data-binary @/tmp/pocketpal-chat.json
+```
+
+Common errors / 常见报错：
+- `Model is not loaded...` → Load a local model in the app first / 请先在 App 内加载本地模型。
+- `messages array is required` → `messages` must be a JSON **array** exactly as shown above; if your client sent an object with numeric keys it will now be auto-corrected, but non-array shapes are still rejected / 确保 `messages` 是数组格式；如果客户端误发了带数字键的对象现在会被自动纠正，其他非数组格式仍会被拒绝。
+- `Requested model \"...\" is not the active local model` → Make `model` match the active model ID / `model` 字段需与当前激活模型 ID 匹配。
+
 ### Copying Text
 
 - **Copy Entire Response**: Tap the copy icon at the bottom of the AI's response bubble.

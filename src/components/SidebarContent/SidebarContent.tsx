@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {TouchableOpacity, View, Alert, SectionList} from 'react-native';
 import {observer} from 'mobx-react';
 import {Divider, Drawer, Text} from 'react-native-paper';
@@ -28,6 +28,10 @@ import {exportChatSession} from '../../utils/exportUtils';
 
 // Check if app is in debug mode
 const isDebugMode = __DEV__;
+
+const createLeadingIcon = (IconComponent: React.FC<any>, color: string) => {
+  return (props: any) => <IconComponent {...props} stroke={color} />;
+};
 
 // Session item props interface
 interface SessionItemProps {
@@ -85,6 +89,19 @@ const SessionItem = React.memo<SessionItemProps>(
       }
     };
 
+    const editLeadingIcon = useMemo(
+      () => createLeadingIcon(EditIcon, theme.colors.primary),
+      [theme.colors.primary],
+    );
+    const shareLeadingIcon = useMemo(
+      () => createLeadingIcon(ShareIcon, theme.colors.primary),
+      [theme.colors.primary],
+    );
+    const trashLeadingIcon = useMemo(
+      () => createLeadingIcon(TrashIcon, theme.colors.error),
+      [theme.colors.error],
+    );
+
     return (
       <View style={styles.sessionItemContainer}>
         {isSelectionMode && (
@@ -120,7 +137,7 @@ const SessionItem = React.memo<SessionItemProps>(
                 onMenuDismiss();
               }}
               label={l10n.common.rename}
-              leadingIcon={() => <EditIcon stroke={theme.colors.primary} />}
+              leadingIcon={editLeadingIcon}
             />
             <Menu.Item
               onPress={() => {
@@ -128,7 +145,7 @@ const SessionItem = React.memo<SessionItemProps>(
                 onMenuDismiss();
               }}
               label={l10n.common.export}
-              leadingIcon={() => <ShareIcon stroke={theme.colors.primary} />}
+              leadingIcon={shareLeadingIcon}
             />
             <Menu.Item
               onPress={() => {
@@ -137,7 +154,7 @@ const SessionItem = React.memo<SessionItemProps>(
               }}
               label={l10n.common.delete}
               labelStyle={{color: theme.colors.error}}
-              leadingIcon={() => <TrashIcon stroke={theme.colors.error} />}
+              leadingIcon={trashLeadingIcon}
             />
             <Divider style={styles.menuDivider} />
             <Menu.Item

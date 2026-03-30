@@ -45,7 +45,7 @@ import {useTheme} from '../../hooks';
 
 import {createStyles} from './styles';
 
-import {modelStore, uiStore, hfStore} from '../../store';
+import {modelStore, uiStore, hfStore, localApiStore} from '../../store';
 import {languageDisplayNames} from '../../locales';
 
 import {CacheType} from '../../utils/types';
@@ -1019,6 +1019,64 @@ export const SettingsScreen: React.FC = observer(() => {
                     onValueChange={value => hfStore.setUseHfToken(value)}
                   />
                 </View>
+
+                {/* Local OpenAI API Server */}
+                <Divider style={styles.divider} />
+                <View style={styles.switchContainer}>
+                  <View style={styles.textContainer}>
+                    <Text variant="titleMedium" style={styles.textLabel}>
+                      {l10n.settings.localApiTitle}
+                    </Text>
+                    <Text variant="labelSmall" style={styles.textDescription}>
+                      {l10n.settings.localApiDescription}
+                    </Text>
+                    <Text
+                      variant="labelSmall"
+                      style={[
+                        styles.textDescription,
+                        localApiStore.lastError
+                          ? {color: theme.colors.error}
+                          : null,
+                      ]}>
+                      {localApiStore.lastError
+                        ? t(l10n.settings.localApiError, {
+                            message: localApiStore.lastError,
+                          })
+                        : localApiStore.running
+                          ? t(l10n.settings.localApiStatusRunning, {
+                              port: localApiStore.port.toString(),
+                            })
+                          : l10n.settings.localApiStatusStopped}
+                    </Text>
+                    {!modelStore.context && (
+                      <Text variant="labelSmall" style={styles.textDescription}>
+                        {l10n.settings.localApiModelRequired}
+                      </Text>
+                    )}
+                  </View>
+                  <Switch
+                    value={localApiStore.enabled}
+                    onValueChange={value => localApiStore.setEnabled(value)}
+                  />
+                </View>
+                <Divider style={styles.divider} />
+                <TextInput
+                  label={l10n.settings.localApiPort}
+                  placeholder={l10n.settings.localApiPortPlaceholder}
+                  keyboardType="numeric"
+                  value={localApiStore.port.toString()}
+                  onChangeText={value =>
+                    localApiStore.setPort(parseInt(value, 10) || 0)
+                  }
+                />
+                <Divider style={styles.divider} />
+                <TextInput
+                  label={l10n.settings.localApiKeyLabel}
+                  value={localApiStore.apiKey || ''}
+                  onChangeText={text => localApiStore.setApiKey(text)}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                />
               </View>
             </Card.Content>
           </Card>
