@@ -138,10 +138,6 @@ async function handleChatCompletion(
   body: any,
   created: number,
 ): Promise<ApiResponse> {
-  if (!body || !Array.isArray(body.messages)) {
-    return buildError(400, 'messages array is required');
-  }
-
   const activeModel = modelStore.activeModel;
   if (!activeModel || activeModel.origin === ModelOrigin.REMOTE) {
     return buildError(400, 'A local model must be loaded to serve requests');

@@ -131,7 +131,7 @@ curl -X POST http://127.0.0.1:8000/v1/chat/completions \
 
 Common errors / 常见报错：
 - `Model is not loaded...` → Load a local model in the app first / 请先在 App 内加载本地模型。
-- `messages array is required` 或 `Object is an object, expected an array` → `messages` must be a JSON **array** exactly as shown above; using the one-line or file-based curl avoids shell quoting problems / 确保 `messages` 是数组格式，推荐使用上面的单行或文件方式。
+- `messages array is required` → `messages` must be a JSON **array** exactly as shown above; if your client sent an object with numeric keys it will now be auto-corrected, but non-array shapes are still rejected / 确保 `messages` 是数组格式；如果客户端误发了带数字键的对象现在会被自动纠正，其他非数组格式仍会被拒绝。
 - `Requested model \"...\" is not the active local model` → Make `model` match the active model ID / `model` 字段需与当前激活模型 ID 匹配。
 
 ### Copying Text
