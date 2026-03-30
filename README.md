@@ -100,9 +100,10 @@ Get PocketPal AI on Google Play:
 
 <img src="assets/images and logos/Chat.png" alt="Chat Screenshot" width="83%">
 
-### 调用本地 OpenAI 兼容接口（/v1/chat/completions）
+### Calling the local OpenAI-compatible API (/v1/chat/completions)
 
-PocketPal 内置了一个本地 API 服务器（默认端口 `8000`，可在 Settings → Local API 开启，并可设置 API Key）。调用前请先在 App 内加载一个本地模型；`model` 字段需与当前激活的本地模型 ID 一致，可通过 `GET /v1/models` 获取。
+PocketPal ships with a local API server (default port `8000`, enable it in **Settings → Local API**, API Key optional). **Load a local model in the app first**, and make sure the `model` field matches the active model ID (discoverable via `GET /v1/models`).  
+PocketPal 内置本地 API 服务器（默认端口 `8000`，可在 **Settings → Local API** 开启并设置 API Key）。调用前请在 App 内加载本地模型；`model` 字段需与当前激活模型 ID 一致，可通过 `GET /v1/models` 获取。
 
 ```bash
 # 可选：如果在设置里开启了 API Key，需要带上 Authorization 头
@@ -119,10 +120,10 @@ curl -X POST http://127.0.0.1:8000/v1/chat/completions \
   }'
 ```
 
-常见报错与排查：
-- `Model is not loaded...`：请先在 App 内加载本地模型。
-- `messages array is required`：确保 `messages` 是数组格式（如上例）。
-- `Requested model "... " is not the active local model`：`model` 字段需与当前激活模型 ID 匹配。
+Common errors / 常见报错：
+- `Model is not loaded...` → Load a local model in the app first / 请先在 App 内加载本地模型。
+- `messages array is required` → `messages` must be an array as shown above / 确保 `messages` 是数组格式。
+- `Requested model \"...\" is not the active local model` → Make `model` match the active model ID / `model` 字段需与当前激活模型 ID 匹配。
 
 ### Copying Text
 
