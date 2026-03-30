@@ -100,6 +100,30 @@ Get PocketPal AI on Google Play:
 
 <img src="assets/images and logos/Chat.png" alt="Chat Screenshot" width="83%">
 
+### 调用本地 OpenAI 兼容接口（/v1/chat/completions）
+
+PocketPal 内置了一个本地 API 服务器（默认端口 `8000`，可在 Settings → Local API 开启，并可设置 API Key）。调用前请先在 App 内加载一个本地模型；`model` 字段需与当前激活的本地模型 ID 一致，可通过 `GET /v1/models` 获取。
+
+```bash
+# 可选：如果在设置里开启了 API Key，需要带上 Authorization 头
+curl -X POST http://127.0.0.1:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <YOUR_API_KEY>" \
+  -d '{
+    "model": "<active-model-id-from-/v1/models>",
+    "messages": [
+      {"role": "system", "content": "You are PocketPal."},
+      {"role": "user", "content": "wakeup"}
+    ],
+    "stream": false
+  }'
+```
+
+常见报错与排查：
+- `Model is not loaded...`：请先在 App 内加载本地模型。
+- `messages array is required`：确保 `messages` 是数组格式（如上例）。
+- `Requested model "... " is not the active local model`：`model` 字段需与当前激活模型 ID 匹配。
+
 ### Copying Text
 
 - **Copy Entire Response**: Tap the copy icon at the bottom of the AI's response bubble.
