@@ -48,6 +48,30 @@ function buildError(
   });
 }
 
+function normalizeMessages(
+  messages: any,
+): Array<{role: string; content: any}> | null {
+  if (Array.isArray(messages)) {
+    return messages;
+  }
+
+  // Some clients may accidentally send an object with numeric keys (e.g., {"0": {...}, "1": {...}})
+  // instead of a JSON array. Coerce such shapes into an array to prevent downstream errors like
+  // "Object is an object, expected an array".
+  if (messages && typeof messages === 'object') {
+    const numericKeys = Object.keys(messages)
+      .filter(k => /^\d+$/.test(k))
+      .map(k => Number(k))
+      .sort((a, b) => a - b);
+
+    if (numericKeys.length) {
+      return numericKeys.map(k => (messages as any)[k]);
+    }
+  }
+
+  return null;
+}
+
 function parseRequestBody<T = any>(raw?: string): T | null {
   if (!raw) {
     return null;
@@ -349,9 +373,11 @@ export async function handleApiRequest(
     }
 
     // Ensure messages is an array to avoid downstream errors
-    if (!Array.isArray(body.messages)) {
+    const normalizedMessages = normalizeMessages(body.messages);
+    if (!normalizedMessages) {
       return buildError(400, 'messages array is required');
     }
+    body.messages = normalizedMessages;
 
     return handleChatCompletion(body, created);
   }

@@ -171,6 +171,43 @@ describe('localApiServer.handleApiRequest', () => {
     expect(payload.error.message).toBe('messages array is required');
   });
 
+  it('coerces object with numeric keys into messages array', async () => {
+    mockEngine.completion.mockResolvedValueOnce({
+      content: 'Hello!',
+      tokens_predicted: 1,
+      tokens_evaluated: 1,
+      stopped_eos: true,
+    });
+
+    const response = await handleApiRequest(
+      {
+        url: '/v1/chat/completions',
+        type: 'POST',
+        postData: JSON.stringify({
+          messages: {
+            0: {role: 'user', content: 'Hi'},
+            1: {role: 'assistant', content: 'Yo'},
+          },
+        }),
+        requestId: 'req-6b',
+      },
+      {port: 8000},
+    );
+
+    expect(response.status).toBe(200);
+    const payload = JSON.parse(response.body);
+    expect(payload.choices[0].message.content).toBe('Hello!');
+    expect(mockEngine.completion).toHaveBeenCalledWith(
+      expect.objectContaining({
+        messages: [
+          {role: 'user', content: 'Hi'},
+          {role: 'assistant', content: 'Yo'},
+        ],
+      }),
+      undefined,
+    );
+  });
+
   it('rejects when model differs from active local model', async () => {
     const response = await handleApiRequest(
       {
