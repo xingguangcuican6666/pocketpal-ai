@@ -106,23 +106,32 @@ PocketPal ships with a local API server (default port `8000`, enable it in **Set
 PocketPal 内置本地 API 服务器（默认端口 `8000`，可在 **Settings → Local API** 开启并设置 API Key）。调用前请在 App 内加载本地模型；`model` 字段需与当前激活模型 ID 一致，可通过 `GET /v1/models` 获取。
 
 ```bash
-# 可选：如果在设置里开启了 API Key，需要带上 Authorization 头
+# One-line JSON to avoid shell quoting issues (replace <> values)
 curl -X POST http://127.0.0.1:8000/v1/chat/completions \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <YOUR_API_KEY>" \
-  -d '{
-    "model": "<active-model-id-from-/v1/models>",
-    "messages": [
-      {"role": "system", "content": "You are PocketPal."},
-      {"role": "user", "content": "wakeup"}
-    ],
-    "stream": false
-  }'
+  -H "Authorization: Bearer <YOUR_API_KEY_IF_SET>" \
+  -d '{"model":"<active-model-id-from-/v1/models>","messages":[{"role":"system","content":"You are PocketPal."},{"role":"user","content":"wakeup"}],"stream":false}'
+
+# 或先保存为文件再调用，避免多行引号被终端错误解析
+cat > /tmp/pocketpal-chat.json <<'EOF'
+{
+  "model": "<active-model-id-from-/v1/models>",
+  "messages": [
+    {"role": "system", "content": "You are PocketPal."},
+    {"role": "user", "content": "wakeup"}
+  ],
+  "stream": false
+}
+EOF
+curl -X POST http://127.0.0.1:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <YOUR_API_KEY_IF_SET>" \
+  --data-binary @/tmp/pocketpal-chat.json
 ```
 
 Common errors / 常见报错：
 - `Model is not loaded...` → Load a local model in the app first / 请先在 App 内加载本地模型。
-- `messages array is required` → `messages` must be an array as shown above / 确保 `messages` 是数组格式。
+- `messages array is required` 或 `Object is an object, expected an array` → `messages` must be a JSON **array** exactly as shown above; using the one-line or file-based curl avoids shell quoting problems / 确保 `messages` 是数组格式，推荐使用上面的单行或文件方式。
 - `Requested model \"...\" is not the active local model` → Make `model` match the active model ID / `model` 字段需与当前激活模型 ID 匹配。
 
 ### Copying Text
